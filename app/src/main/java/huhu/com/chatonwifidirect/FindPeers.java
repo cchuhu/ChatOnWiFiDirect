@@ -5,11 +5,11 @@ import android.net.wifi.p2p.WifiP2pDeviceList;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 
 import java.util.ArrayList;
 
 /**
+ * 查找对等体的类，主要功能是返回对等体列表。
  * Created by Huhu on 4/24/16.
  */
 public class FindPeers implements WifiP2pManager.PeerListListener {
@@ -23,6 +23,8 @@ public class FindPeers implements WifiP2pManager.PeerListListener {
 
     @Override
     public void onPeersAvailable(WifiP2pDeviceList wifiP2pDeviceList) {
+        //先清除所有的旧信息，否则会导致列表数据重复
+        list_wifiP2pDevices.clear();
         //获取到消息列表之后，使用handler发送消息给主线程，告知主线程来取设备列表。
         list_wifiP2pDevices.addAll(wifiP2pDeviceList.getDeviceList());
         Message message = new Message();
