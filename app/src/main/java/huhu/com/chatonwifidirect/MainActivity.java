@@ -8,7 +8,6 @@ import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
@@ -27,7 +26,7 @@ public class MainActivity extends Activity {
     //获取channel对象
     private WifiP2pManager.Channel channel;
     //设备信息文本框
-    private TextView tv_name, tv_status;
+    private TextView tv_name;
     //搜索按钮
     private Button btn_search;
     //列表实例
@@ -36,17 +35,20 @@ public class MainActivity extends Activity {
     private ListAdapter adapter;
     //设备列表
     private ArrayList<WifiP2pDevice> mPeerslist;
-    //handler实例
+    /**
+     * case 1:获取到数据
+     * case 2:自己的设备发生变化
+     */
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case 1:
                     mPeerslist = FindPeers.getDeviceList();
-                    Log.e("获取到数据了",mPeerslist.size()+"");
-                    //获取到列表后，呈现数据
                     presentData(mPeerslist);
                     break;
+                case 2:
+                    updateDevice((WifiP2pDevice) msg.obj);
             }
         }
     };
@@ -75,7 +77,6 @@ public class MainActivity extends Activity {
     private void init() {
         //实例化视图
         tv_name = (TextView) findViewById(R.id.tv_name);
-        tv_status = (TextView) findViewById(R.id.tv_status);
         btn_search = (Button) findViewById(R.id.btn_search);
         lv_peers = (ListView) findViewById(R.id.listview_peers);
         //实例化数组
@@ -122,6 +123,16 @@ public class MainActivity extends Activity {
     private void presentData(ArrayList<WifiP2pDevice> mPeerslist) {
         adapter = new ListAdapter(mPeerslist, MainActivity.this);
         lv_peers.setAdapter(adapter);
+
+    }
+
+    /**
+     * 更新设备状态的方法
+     *
+     * @param device
+     */
+    private void updateDevice(WifiP2pDevice device) {
+        tv_name.setText(device.deviceName);
 
     }
 
