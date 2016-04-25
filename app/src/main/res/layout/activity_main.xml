@@ -23,20 +23,26 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="#ff0000"/>
+            android:background="#c0c0c0"/>
 
         <TextView
-            android:id="@+id/tv_name"
+            android:id="@+id/tv_myname"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:text="您的设备不支持Wi-Fi Direct"/>
+        <TextView
+            android:id="@+id/tv_mystatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="不可用"/>
 
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="#ff0000"/>
+            android:background="#c0c0c0"/>
 
 
         <Button

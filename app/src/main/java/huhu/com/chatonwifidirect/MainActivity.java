@@ -27,7 +27,7 @@ public class MainActivity extends Activity {
     //获取channel对象
     private WifiP2pManager.Channel channel;
     //设备信息文本框
-    private TextView tv_name;
+    private TextView tv_myname, tv_mystatus;
     //搜索按钮
     private Button btn_search;
     //列表实例
@@ -50,7 +50,7 @@ public class MainActivity extends Activity {
                     presentData(mPeerslist);
                     break;
                 case 2:
-                    updateDevice((WifiP2pDevice) msg.obj);
+                    updateDevice(((WifiP2pDevice) msg.obj));
                     break;
                 case 3:
                     connectDevice(mPeerslist.get(msg.arg1));
@@ -76,13 +76,20 @@ public class MainActivity extends Activity {
         registerReceiver(myReceiver, filter);
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(myReceiver);
+    }
+
 
     /**
      * 初始化资源的方法
      */
     private void init() {
         //实例化视图
-        tv_name = (TextView) findViewById(R.id.tv_name);
+        tv_myname = (TextView) findViewById(R.id.tv_myname);
+        tv_mystatus = (TextView) findViewById(R.id.tv_mystatus);
         btn_search = (Button) findViewById(R.id.btn_search);
         lv_peers = (ListView) findViewById(R.id.listview_peers);
         //实例化数组
@@ -138,7 +145,29 @@ public class MainActivity extends Activity {
      * @param device
      */
     private void updateDevice(WifiP2pDevice device) {
-        tv_name.setText(device.deviceName);
+        tv_myname.setText(device.deviceName);
+        String str_status;
+
+        switch (device.status) {
+            case WifiP2pDevice.AVAILABLE:
+                str_status = "空闲中";
+                break;
+            case WifiP2pDevice.CONNECTED:
+                str_status = "连接中";
+                break;
+            case WifiP2pDevice.FAILED:
+                str_status = "连接失败";
+                break;
+            case WifiP2pDevice.INVITED:
+                str_status = "收到邀请";
+                break;
+            case WifiP2pDevice.UNAVAILABLE:
+                str_status = "设备不可用";
+                break;
+            default:
+                str_status = "未知状况";
+        }
+        tv_mystatus.setText(str_status);
     }
 
     /**
@@ -149,6 +178,7 @@ public class MainActivity extends Activity {
     private void connectDevice(WifiP2pDevice device) {
         WifiP2pConfig config = new WifiP2pConfig();
         config.deviceAddress = device.deviceAddress;
+        //该接口仅仅通知连接是否成功
         wifiP2pManager.connect(channel, config, new WifiP2pManager.ActionListener() {
             @Override
             public void onSuccess() {
@@ -174,12 +204,6 @@ public class MainActivity extends Activity {
             filter.addAction(kvs[i]);
         }
         return filter;
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        unregisterReceiver(myReceiver);
     }
 
 
