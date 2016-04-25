@@ -48,13 +48,12 @@ public class ListAdapter extends BaseAdapter {
         MyHolder holder = null;
         if (convertView == null) {
             convertView = ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.item, null);
-            holder = new MyHolder((TextView) convertView.findViewById(R.id.tv_name), (TextView) convertView.findViewById(R.id.tv_status));
+            holder = new MyHolder((TextView) convertView.findViewById(R.id.tv_device_name));
             convertView.setTag(holder);
         } else {
             holder = (MyHolder) convertView.getTag();
         }
         holder.tv_name.setText(deviceArrayList.get(i).deviceName);
-        holder.tv_status.setText(deviceArrayList.get(i).status);
 
 
         return convertView;
@@ -62,11 +61,10 @@ public class ListAdapter extends BaseAdapter {
 
     class MyHolder {
         private TextView tv_name;
-        private TextView tv_status;
 
-        public MyHolder(TextView tv_name, TextView tv_status) {
+        public MyHolder(TextView tv_name) {
             this.tv_name = tv_name;
-            this.tv_status = tv_status;
+
         }
     }
 }
