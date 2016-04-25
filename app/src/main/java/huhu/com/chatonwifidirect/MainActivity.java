@@ -3,6 +3,7 @@ package huhu.com.chatonwifidirect;
 import android.app.Activity;
 import android.content.Context;
 import android.content.IntentFilter;
+import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Bundle;
@@ -38,6 +39,7 @@ public class MainActivity extends Activity {
     /**
      * case 1:获取到数据
      * case 2:自己的设备发生变化
+     * case 3:选中一个设备并连接
      */
     private Handler handler = new Handler() {
         @Override
@@ -49,6 +51,10 @@ public class MainActivity extends Activity {
                     break;
                 case 2:
                     updateDevice((WifiP2pDevice) msg.obj);
+                    break;
+                case 3:
+                    connectDevice(mPeerslist.get(msg.arg1));
+                    break;
             }
         }
     };
@@ -121,7 +127,7 @@ public class MainActivity extends Activity {
      * @param mPeerslist 获取到的设备列表
      */
     private void presentData(ArrayList<WifiP2pDevice> mPeerslist) {
-        adapter = new ListAdapter(mPeerslist, MainActivity.this);
+        adapter = new ListAdapter(mPeerslist, MainActivity.this, handler);
         lv_peers.setAdapter(adapter);
 
     }
@@ -133,7 +139,27 @@ public class MainActivity extends Activity {
      */
     private void updateDevice(WifiP2pDevice device) {
         tv_name.setText(device.deviceName);
+    }
 
+    /**
+     * 与指定设备连接
+     *
+     * @param device 要连接的设备
+     */
+    private void connectDevice(WifiP2pDevice device) {
+        WifiP2pConfig config = new WifiP2pConfig();
+        config.deviceAddress = device.deviceAddress;
+        wifiP2pManager.connect(channel, config, new WifiP2pManager.ActionListener() {
+            @Override
+            public void onSuccess() {
+                ToastBuilder.Build("连接成功", MainActivity.this);
+            }
+
+            @Override
+            public void onFailure(int i) {
+                ToastBuilder.Build("连接失败", MainActivity.this);
+            }
+        });
     }
 
     /**
