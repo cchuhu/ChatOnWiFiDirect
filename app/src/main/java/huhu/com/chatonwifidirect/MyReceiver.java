@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Handler;
+import android.os.Message;
 
 public class MyReceiver extends BroadcastReceiver {
     //调试用tag
@@ -45,10 +46,16 @@ public class MyReceiver extends BroadcastReceiver {
                 if (wifiP2pManager != null) {
                     wifiP2pManager.requestPeers(channel, new FindPeers(handler));
                 }
-
                 break;
+            //自己的设备状态发生变化的广播
             case WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION:
+                Message msg = new Message();
+                msg.what = 2;
+                msg.obj = intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_DEVICE);
+                handler.sendMessage(msg);
                 break;
+
+
         }
 
     }
