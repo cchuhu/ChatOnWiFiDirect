@@ -54,7 +54,7 @@ public class ListAdapter extends BaseAdapter {
         MyHolder holder = null;
         if (convertView == null) {
             convertView = ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.item, null);
-            holder = new MyHolder((TextView) convertView.findViewById(R.id.tv_device_name), (TextView) convertView.findViewById(R.id.tv_connectstatus), (Button) convertView.findViewById(R.id.btn_connect));
+            holder = new MyHolder((TextView) convertView.findViewById(R.id.tv_device_name), (Button) convertView.findViewById(R.id.btn_connect));
             convertView.setTag(holder);
         } else {
             holder = (MyHolder) convertView.getTag();
@@ -79,7 +79,7 @@ public class ListAdapter extends BaseAdapter {
         private TextView tv_name;
         private Button btn_connect;
 
-        public MyHolder(TextView tv_name, TextView tv_connectstatus, Button btn_connect) {
+        public MyHolder(TextView tv_name, Button btn_connect) {
             this.tv_name = tv_name;
             this.btn_connect = btn_connect;
 

@@ -40,7 +40,7 @@ public class MyReceiver extends BroadcastReceiver {
                 }
                 break;
             case WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION:
-                wifiP2pManager.requestConnectionInfo(channel, new ConnectPeers(handler));
+                wifiP2pManager.requestConnectionInfo(channel, new ConnectPeers(handler,activity));
                 break;
             //对等体列表信息改变的广播
             case WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION:

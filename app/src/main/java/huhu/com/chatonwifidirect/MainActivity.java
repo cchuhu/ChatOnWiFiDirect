@@ -2,6 +2,7 @@ package huhu.com.chatonwifidirect;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
@@ -16,6 +17,7 @@ import android.widget.TextView;
 
 import com.example.wifidirect.R;
 
+import java.net.InetAddress;
 import java.util.ArrayList;
 
 public class MainActivity extends Activity {
@@ -36,10 +38,15 @@ public class MainActivity extends Activity {
     private ListAdapter adapter;
     //设备列表
     private ArrayList<WifiP2pDevice> mPeerslist;
+    //判断谁是组长
+    private boolean isGroupOwner;
+    //组长的地址
+    private InetAddress groupOwnerAddress;
     /**
      * case 1:获取到数据
      * case 2:自己的设备发生变化
      * case 3:选中一个设备并连接
+     * case 4:判断是否是组长
      */
     private Handler handler = new Handler() {
         @Override
@@ -55,6 +62,15 @@ public class MainActivity extends Activity {
                 case 3:
                     connectDevice(mPeerslist.get(msg.arg1));
                     break;
+                case 4:
+                    groupOwnerAddress = (InetAddress) msg.obj;
+                    if (msg.arg1 == 1) {
+                        isGroupOwner = true;
+                    } else {
+                        isGroupOwner = false;
+                    }
+                    jumpToChat(isGroupOwner, groupOwnerAddress);
+
             }
         }
     };
@@ -206,5 +222,18 @@ public class MainActivity extends Activity {
         return filter;
     }
 
+    /**
+     * 跳转到聊天界面
+     *
+     * @param isGroupOwner      是否是组长
+     * @param groupOwnerAddress 组长的ip地址
+     */
+    private void jumpToChat(boolean isGroupOwner, InetAddress groupOwnerAddress) {
+        Intent i = new Intent();
+        i.putExtra("isGroupOwner", isGroupOwner);
+        i.putExtra("groupOwnerAddress", groupOwnerAddress);
+        i.setClass(MainActivity.this, ChatActivity.class);
+        startActivity(i);
 
+    }
 }
