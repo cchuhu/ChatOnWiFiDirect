@@ -50,7 +50,7 @@ public class RecordListAdapter extends BaseAdapter {
     public View getView(final int i, View convertView, ViewGroup viewGroup) {
         MyHolder holder = null;
         if (convertView == null) {
-            convertView = ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.chatentity, null);
+            convertView = ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.item_message, null);
             holder = new MyHolder((TextView) convertView.findViewById(R.id.tv_recordname), (TextView) convertView.findViewById(R.id.tv_recordcontent));
             convertView.setTag(holder);
         } else {

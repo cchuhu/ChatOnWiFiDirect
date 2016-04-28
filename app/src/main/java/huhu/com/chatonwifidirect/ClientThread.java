@@ -53,6 +53,13 @@ public class ClientThread extends ChatThread {
                 try {
                     ChatEntity chatEntity = (ChatEntity) inputStream.readObject();
                     //发送message给chatActivity更新数据
+                    //如果收到结束信号，则跳出循环
+                    if (chatEntity.getWord().equals(Constants.endSignal)) {
+                        Message msg = new Message();
+                        msg.what = 3;
+                        handler.sendMessage(msg);
+                        break;
+                    }
                     Message msg = new Message();
                     msg.obj = chatEntity;
                     msg.what = 2;

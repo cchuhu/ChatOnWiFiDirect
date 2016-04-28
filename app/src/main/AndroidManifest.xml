@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest package="com.example.wifidirect"
-          xmlns:android="http://schemas.android.com/apk/res/android"
-          android:versionCode="1"
-          android:versionName="1.0">
+<manifest
+    package="com.example.wifidirect"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:versionCode="1"
+    android:versionName="1.0">
 
     <uses-sdk
         android:minSdkVersion="16"
@@ -20,7 +21,7 @@
         android:allowBackup="true"
         android:icon="@mipmap/icon"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme">
+        android:theme="@style/Theme.AppCompat.Light.NoActionBar">
         <activity
             android:name="huhu.com.chatonwifidirect.MainActivity"
             android:label="@string/app_name"
@@ -31,7 +32,9 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name="huhu.com.chatonwifidirect.ChatActivity">
+        <activity
+            android:name="huhu.com.chatonwifidirect.ChatActivity"
+            android:windowSoftInputMode="stateHidden">
         </activity>
     </application>
 

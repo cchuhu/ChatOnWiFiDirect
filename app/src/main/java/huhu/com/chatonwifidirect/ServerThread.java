@@ -29,9 +29,9 @@ public class ServerThread extends ChatThread {
     //handler实例
     private Handler handler;
 
-    public ServerThread(int PORT,Handler handler) {
+    public ServerThread(int PORT, Handler handler) {
         this.PORT = PORT;
-        this.handler=handler;
+        this.handler = handler;
     }
 
     @Override
@@ -46,11 +46,17 @@ public class ServerThread extends ChatThread {
             while (true) {
                 try {
                     ChatEntity chatEntity = (ChatEntity) inputStream.readObject();
+                    //如果收到结束信号，则跳出循环
+                    if (chatEntity.getWord().equals(Constants.endSignal) ) {
+                        Message msg = new Message();
+                        msg.what=3;
+                        handler.sendMessage(msg);
+                        break;
+                    }
                     Message msg = new Message();
                     msg.obj = chatEntity;
                     msg.what = 2;
                     handler.sendMessage(msg);
-                    Log.e(chatEntity.getName()+"说：", chatEntity.getWord());
                 } catch (IOException e) {
                     Log.e("IOException", "disconnected", e);
                 }
@@ -76,6 +82,5 @@ public class ServerThread extends ChatThread {
     public void write(ChatEntity entity) throws IOException {
         outputStream.writeObject(entity);
         outputStream.flush();
-
     }
 }

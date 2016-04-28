@@ -11,4 +11,6 @@ public class Constants {
     public static String CONNECT_ACTION = "CONNECT_ACTION";
     //端口号
     public static int PORT=8898;
+    //对话结束标志
+    public static String endSignal="quit";
 }

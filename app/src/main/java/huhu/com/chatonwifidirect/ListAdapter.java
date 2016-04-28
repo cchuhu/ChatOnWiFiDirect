@@ -53,7 +53,7 @@ public class ListAdapter extends BaseAdapter {
     public View getView(final int i, View convertView, ViewGroup viewGroup) {
         MyHolder holder = null;
         if (convertView == null) {
-            convertView = ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.item, null);
+            convertView = ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.item_device, null);
             holder = new MyHolder((TextView) convertView.findViewById(R.id.tv_device_name), (Button) convertView.findViewById(R.id.btn_connect));
             convertView.setTag(holder);
         } else {

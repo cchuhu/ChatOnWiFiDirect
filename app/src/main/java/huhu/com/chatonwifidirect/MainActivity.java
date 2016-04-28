@@ -75,7 +75,7 @@ public class MainActivity extends Activity {
                     } else {
                         isGroupOwner = false;
                     }
-                    ToastBuilder.Build("可以聊天啦", MainActivity.this);
+                    ToastBuilder.Build("搭讪成功(^.^) ", MainActivity.this);
                     jumpToChat(isGroupOwner, groupOwnerAddress, device.deviceName);
 
 
@@ -206,12 +206,12 @@ public class MainActivity extends Activity {
         wifiP2pManager.connect(channel, config, new WifiP2pManager.ActionListener() {
             @Override
             public void onSuccess() {
-                ToastBuilder.Build("正在连接中...", MainActivity.this);
+                ToastBuilder.Build("正在搭讪中...(0.0) ", MainActivity.this);
             }
 
             @Override
             public void onFailure(int i) {
-                ToastBuilder.Build("连接失败", MainActivity.this);
+                ToastBuilder.Build("搭讪失败，请重试(>_<)", MainActivity.this);
             }
         });
     }
@@ -242,6 +242,7 @@ public class MainActivity extends Activity {
         i.putExtra("isGroupOwner", isGroupOwner);
         i.putExtra("groupOwnerAddress", groupOwnerAddress);
         i.putExtra("devicename", name);
+        i.putExtra("p2pname", mPeerslist.get(position).deviceName);
         i.setClass(MainActivity.this, ChatActivity.class);
         startActivity(i);
 

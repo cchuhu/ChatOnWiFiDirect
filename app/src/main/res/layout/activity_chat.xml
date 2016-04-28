@@ -1,36 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+    >
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="#171718">
+
+        <Button
+            android:id="@+id/btn_back"
+            android:layout_width="15dp"
+            android:layout_height="30dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:background="@mipmap/back"/>
+
+        <TextView
+            android:id="@+id/tv_head"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:text="user"
+            android:textColor="#dbb86f"
+            android:textSize="20dp"/>
+    </RelativeLayout>
 
     <ListView
         android:id="@+id/lv_chatRecord"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="10"></ListView>
+        android:layout_height="fill_parent"
+        android:layout_above="@+id/below"
+        android:layout_below="@+id/relativeLayout"
+        android:background="#eeeff3"
+        android:divider="@null"
+        android:transcriptMode="alwaysScroll"/>
+
 
     <LinearLayout
+        android:id="@+id/below"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:background="#eeeff3"
         android:orientation="horizontal">
 
         <EditText
             android:id="@+id/tv_message"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="5dp"
             android:layout_weight="3"
-            android:background="#c0c0c0"
-            android:gravity="center"
-            android:hint="请输入要发送的文字"/>
+            android:background="@drawable/rounded_edittext"
+            android:hint="请输入要发送的文字"
+            android:paddingLeft="10dp"/>
 
         <Button
             android:id="@+id/btn_sendMessage"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_marginBottom="5dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="5dp"
             android:layout_weight="1"
-            android:text="发送"/>
+            android:background="@drawable/rounded_button"
+            android:text="发送"
+
+            android:textColor="#ffffff"/>
     </LinearLayout>
 
-</LinearLayout>
+</RelativeLayout>
