@@ -23,6 +23,7 @@ public class ConnectPeers implements WifiP2pManager.ConnectionInfoListener {
     public void onConnectionInfoAvailable(WifiP2pInfo wifiP2pInfo) {
         //判断是否建立了组
         if (wifiP2pInfo.groupFormed) {
+
             Message msg = new Message();
             msg.what = 4;
             msg.obj = wifiP2pInfo.groupOwnerAddress;
