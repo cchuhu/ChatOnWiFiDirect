@@ -1,6 +1,8 @@
 package huhu.com.chatonwifidirect;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 
 import java.io.IOException;
@@ -24,10 +26,12 @@ public class ServerThread extends ChatThread {
     //输入输出流
     private ObjectInputStream inputStream;
     private ObjectOutputStream outputStream;
+    //handler实例
+    private Handler handler;
 
-    public ServerThread(int PORT, Context context) {
+    public ServerThread(int PORT,Handler handler) {
         this.PORT = PORT;
-        this.context = context;
+        this.handler=handler;
     }
 
     @Override
@@ -42,7 +46,11 @@ public class ServerThread extends ChatThread {
             while (true) {
                 try {
                     ChatEntity chatEntity = (ChatEntity) inputStream.readObject();
-                    Log.e("收到数据", chatEntity.getWord());
+                    Message msg = new Message();
+                    msg.obj = chatEntity;
+                    msg.what = 2;
+                    handler.sendMessage(msg);
+                    Log.e(chatEntity.getName()+"说：", chatEntity.getWord());
                 } catch (IOException e) {
                     Log.e("IOException", "disconnected", e);
                 }

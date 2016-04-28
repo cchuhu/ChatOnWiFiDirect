@@ -11,7 +11,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -43,6 +42,10 @@ public class MainActivity extends Activity {
     private boolean isGroupOwner;
     //组长的地址
     private InetAddress groupOwnerAddress;
+    //设备在当前列表中的位置
+    private int position;
+    //自己的设备信息
+    private WifiP2pDevice device;
     /**
      * case 1:获取到数据
      * case 2:自己的设备发生变化
@@ -58,10 +61,12 @@ public class MainActivity extends Activity {
                     presentData(mPeerslist);
                     break;
                 case 2:
-                    updateDevice(((WifiP2pDevice) msg.obj));
+                    device = ((WifiP2pDevice) msg.obj);
+                    updateDevice(device);
                     break;
                 case 3:
-                    connectDevice(mPeerslist.get(msg.arg1));
+                    position = msg.arg1;
+                    connectDevice(mPeerslist.get(position));
                     break;
                 case 4:
                     groupOwnerAddress = (InetAddress) msg.obj;
@@ -70,7 +75,9 @@ public class MainActivity extends Activity {
                     } else {
                         isGroupOwner = false;
                     }
-                    jumpToChat(isGroupOwner, groupOwnerAddress);
+                    ToastBuilder.Build("可以聊天啦", MainActivity.this);
+                    jumpToChat(isGroupOwner, groupOwnerAddress, device.deviceName);
+
 
             }
         }
@@ -124,13 +131,7 @@ public class MainActivity extends Activity {
                 discover();
             }
         });
-        //为列表项设置监听器
-        lv_peers.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
-            }
-        });
     }
 
     /**
@@ -205,7 +206,7 @@ public class MainActivity extends Activity {
         wifiP2pManager.connect(channel, config, new WifiP2pManager.ActionListener() {
             @Override
             public void onSuccess() {
-                ToastBuilder.Build("连接成功", MainActivity.this);
+                ToastBuilder.Build("正在连接中...", MainActivity.this);
             }
 
             @Override
@@ -234,11 +235,13 @@ public class MainActivity extends Activity {
      *
      * @param isGroupOwner      是否是组长
      * @param groupOwnerAddress 组长的ip地址
+     * @name 自己的名字
      */
-    private void jumpToChat(boolean isGroupOwner, InetAddress groupOwnerAddress) {
+    private void jumpToChat(boolean isGroupOwner, InetAddress groupOwnerAddress, String name) {
         Intent i = new Intent();
         i.putExtra("isGroupOwner", isGroupOwner);
         i.putExtra("groupOwnerAddress", groupOwnerAddress);
+        i.putExtra("devicename", name);
         i.setClass(MainActivity.this, ChatActivity.class);
         startActivity(i);
 

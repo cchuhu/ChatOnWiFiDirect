@@ -8,6 +8,7 @@ import android.os.Message;
 
 /**
  * Created by Huhu on 4/25/16.
+ * 检测连接信息变化
  */
 public class ConnectPeers implements WifiP2pManager.ConnectionInfoListener {
     private Handler handler;
@@ -23,7 +24,6 @@ public class ConnectPeers implements WifiP2pManager.ConnectionInfoListener {
     public void onConnectionInfoAvailable(WifiP2pInfo wifiP2pInfo) {
         //判断是否建立了组
         if (wifiP2pInfo.groupFormed) {
-
             Message msg = new Message();
             msg.what = 4;
             msg.obj = wifiP2pInfo.groupOwnerAddress;

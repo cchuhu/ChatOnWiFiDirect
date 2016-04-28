@@ -7,6 +7,9 @@ import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Handler;
 import android.os.Message;
 
+/**
+ * 广播接收器类
+ */
 public class MyReceiver extends BroadcastReceiver {
     //调试用tag
     private static final String TAG = "WifiDirectBroadReceiver";
