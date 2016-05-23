@@ -1,4 +1,4 @@
-package huhu.com.chatonwifidirect;
+package huhu.com.chatonwifidirect.Widget;
 
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pDeviceList;

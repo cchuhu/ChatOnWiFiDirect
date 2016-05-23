@@ -12,7 +12,7 @@
         android:background="#171718"
         android:gravity="center"
         android:padding="10dp"
-        android:text="我的设备"
+        android:text="Free and Direct"
         android:textColor="#dbb86f"
         android:textSize="20dp"/>
 

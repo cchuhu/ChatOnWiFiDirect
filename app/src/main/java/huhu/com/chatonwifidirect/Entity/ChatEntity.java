@@ -1,4 +1,4 @@
-package huhu.com.chatonwifidirect;
+package huhu.com.chatonwifidirect.Entity;
 
 import java.io.Serializable;
 

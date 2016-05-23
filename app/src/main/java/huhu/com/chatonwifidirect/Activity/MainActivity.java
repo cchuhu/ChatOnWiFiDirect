@@ -1,16 +1,20 @@
-package huhu.com.chatonwifidirect;
+package huhu.com.chatonwifidirect.Activity;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Message;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -20,10 +24,16 @@ import com.example.wifidirect.R;
 import java.net.InetAddress;
 import java.util.ArrayList;
 
+import huhu.com.chatonwifidirect.Adapter.ListAdapter;
+import huhu.com.chatonwifidirect.Util.ToastBuilder;
+import huhu.com.chatonwifidirect.Widget.ConnectService;
+import huhu.com.chatonwifidirect.Widget.FindPeers;
+import huhu.com.chatonwifidirect.Widget.p2pInfoReceiver;
+
 public class MainActivity extends Activity {
 
     //自定义的广播接收器对象
-    private MyReceiver myReceiver;
+    private p2pInfoReceiver p2pInfoReceiver;
     //wifi管理类对象
     private WifiP2pManager wifiP2pManager;
     //获取channel对象
@@ -38,6 +48,7 @@ public class MainActivity extends Activity {
     private ListAdapter adapter;
     //设备列表
     private ArrayList<WifiP2pDevice> mPeerslist;
+
     //判断谁是组长
     private boolean isGroupOwner;
     //组长的地址
@@ -46,11 +57,16 @@ public class MainActivity extends Activity {
     private int position;
     //自己的设备信息
     private WifiP2pDevice device;
+    //service类实例
+    private ConnectService connectService;
+    //serviceConnection实例
+    private ServiceConnection serviceConnection;
     /**
      * case 1:获取到数据
      * case 2:自己的设备发生变化
      * case 3:选中一个设备并连接
-     * case 4:判断是否是组长
+     * case 4:判断是否是组长.
+     * case 5:断开连接的信号
      */
     private Handler handler = new Handler() {
         @Override
@@ -66,7 +82,7 @@ public class MainActivity extends Activity {
                     break;
                 case 3:
                     position = msg.arg1;
-                    connectDevice(mPeerslist.get(position));
+                    connectDevice(mPeerslist.get(position), position);
                     break;
                 case 4:
                     groupOwnerAddress = (InetAddress) msg.obj;
@@ -75,8 +91,12 @@ public class MainActivity extends Activity {
                     } else {
                         isGroupOwner = false;
                     }
-                    ToastBuilder.Build("搭讪成功(^.^) ", MainActivity.this);
-                    jumpToChat(isGroupOwner, groupOwnerAddress, device.deviceName);
+                    initService(isGroupOwner, groupOwnerAddress);
+                    // jumpToChat(isGroupOwner, groupOwnerAddress, device.deviceName);
+                    break;
+                case 5:
+                    disconnect();
+                    updateDevice(device);
 
 
             }
@@ -89,21 +109,22 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         init();
+        //建立过滤器
+        IntentFilter filter = getIntentFilter(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION, WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION, WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION, WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
+        //注册广播接收器
+        registerReceiver(p2pInfoReceiver, filter);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        //建立过滤器
-        IntentFilter filter = getIntentFilter(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION, WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION, WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION, WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
-        //注册广播接收器
-        registerReceiver(myReceiver, filter);
+
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        unregisterReceiver(myReceiver);
+
     }
 
 
@@ -123,12 +144,19 @@ public class MainActivity extends Activity {
         //获取channel对象
         channel = wifiP2pManager.initialize(this, getMainLooper(), null);
         //实例化receiver
-        myReceiver = new MyReceiver(wifiP2pManager, channel, this, handler);
+        p2pInfoReceiver = new p2pInfoReceiver(wifiP2pManager, channel, this, handler);
         //为按钮设置监听
         btn_search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 discover();
+            }
+        });
+        //为列表项设置监听器
+        lv_peers.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                jumpToChat(isGroupOwner, device.deviceName, mPeerslist.get(i).deviceName);
             }
         });
 
@@ -142,7 +170,7 @@ public class MainActivity extends Activity {
         wifiP2pManager.discoverPeers(channel, new WifiP2pManager.ActionListener() {
             @Override
             public void onSuccess() {
-                ToastBuilder.Build("扫描成功", MainActivity.this);
+                ToastBuilder.Build("正在扫描中...", MainActivity.this);
             }
 
             @Override
@@ -195,18 +223,19 @@ public class MainActivity extends Activity {
     }
 
     /**
-     * 与指定设备连接
+     * 与指定设备建立连接
      *
      * @param device 要连接的设备
      */
-    private void connectDevice(WifiP2pDevice device) {
+    private void connectDevice(WifiP2pDevice device, final int position) {
         WifiP2pConfig config = new WifiP2pConfig();
         config.deviceAddress = device.deviceAddress;
         //该接口仅仅通知连接是否成功
         wifiP2pManager.connect(channel, config, new WifiP2pManager.ActionListener() {
             @Override
             public void onSuccess() {
-                ToastBuilder.Build("正在搭讪中...(0.0) ", MainActivity.this);
+
+
             }
 
             @Override
@@ -215,6 +244,34 @@ public class MainActivity extends Activity {
             }
         });
     }
+
+    /**
+     * 开启后台线程
+     *
+     * @param isOwner      是否是组长
+     * @param OwnerAddress 组长的ip地址
+     */
+    private void initService(final Boolean isOwner, final InetAddress OwnerAddress) {
+        //如果连接成功，则开启service准备接收信息
+        Intent intent = new Intent(MainActivity.this, ConnectService.class);
+        serviceConnection = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+                //获取到service实例
+                connectService = ((ConnectService.MyBinder) iBinder).getService();
+                //初始化socket流，准备传输数据
+                connectService.initSocket(isOwner, OwnerAddress);
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName componentName) {
+            }
+        };
+        //开启服务
+        bindService(intent, serviceConnection, BIND_AUTO_CREATE);
+
+    }
+
 
     /**
      *  设置过滤器的方法
@@ -233,18 +290,41 @@ public class MainActivity extends Activity {
     /**
      * 跳转到聊天界面
      *
-     * @param isGroupOwner      是否是组长
-     * @param groupOwnerAddress 组长的ip地址
+     * @param isGroupOwner 是否是组长
      * @name 自己的名字
+     * @p2pname 对方的名字
      */
-    private void jumpToChat(boolean isGroupOwner, InetAddress groupOwnerAddress, String name) {
+    private void jumpToChat(boolean isGroupOwner, String name, String p2pname) {
         Intent i = new Intent();
-        i.putExtra("isGroupOwner", isGroupOwner);
-        i.putExtra("groupOwnerAddress", groupOwnerAddress);
         i.putExtra("devicename", name);
-        i.putExtra("p2pname", mPeerslist.get(position).deviceName);
+        i.putExtra("p2pname", p2pname);
         i.setClass(MainActivity.this, ChatActivity.class);
         startActivity(i);
 
+    }
+
+    /**
+     * 断开连接的方法
+     */
+    private void disconnect() {
+        wifiP2pManager.removeGroup(channel, new WifiP2pManager.ActionListener() {
+            @Override
+            public void onSuccess() {
+                ToastBuilder.Build("已断开连接", MainActivity.this);
+                btn_search.performClick();
+            }
+
+            @Override
+            public void onFailure(int i) {
+                ToastBuilder.Build("结束失败", MainActivity.this);
+
+            }
+        });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(p2pInfoReceiver);
     }
 }

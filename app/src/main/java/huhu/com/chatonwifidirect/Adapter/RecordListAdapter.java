@@ -1,4 +1,4 @@
-package huhu.com.chatonwifidirect;
+package huhu.com.chatonwifidirect.Adapter;
 
 import android.content.Context;
 import android.os.Handler;
@@ -12,6 +12,8 @@ import com.example.wifidirect.R;
 
 import java.util.ArrayList;
 
+import huhu.com.chatonwifidirect.Entity.ChatEntity;
+
 /**
  * Created by Huhu on 4/28/16.
  * 聊天记录列表的适配器
@@ -24,7 +26,7 @@ public class RecordListAdapter extends BaseAdapter {
     //handler对象
     private Handler handler;
 
-    public RecordListAdapter(ArrayList<ChatEntity> recordlist, Context context, Handler handler) {
+    public RecordListAdapter(ArrayList<ChatEntity> recordlist, Context context) {
         this.recordlist = recordlist;
         this.context = context;
         this.handler = handler;

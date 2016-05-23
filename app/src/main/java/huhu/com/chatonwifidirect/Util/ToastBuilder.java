@@ -1,4 +1,4 @@
-package huhu.com.chatonwifidirect;
+package huhu.com.chatonwifidirect.Util;
 
 import android.content.Context;
 import android.widget.Toast;

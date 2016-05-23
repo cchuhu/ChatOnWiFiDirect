@@ -1,6 +1,8 @@
-package huhu.com.chatonwifidirect;
+package huhu.com.chatonwifidirect.Thread;
 
 import java.io.IOException;
+
+import huhu.com.chatonwifidirect.Entity.ChatEntity;
 
 /**
  * Created by Huhu on 4/27/16.

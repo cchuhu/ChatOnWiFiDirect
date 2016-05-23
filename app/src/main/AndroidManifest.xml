@@ -16,14 +16,13 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
 
-
     <application
         android:allowBackup="true"
         android:icon="@mipmap/icon"
-        android:label="@string/app_name"
+        android:label="Frect"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
         <activity
-            android:name="huhu.com.chatonwifidirect.MainActivity"
+            android:name="huhu.com.chatonwifidirect.Activity.MainActivity"
             android:label="@string/app_name"
             android:launchMode="singleTask">
             <intent-filter>
@@ -33,9 +32,16 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="huhu.com.chatonwifidirect.ChatActivity"
+            android:name="huhu.com.chatonwifidirect.Activity.ChatActivity"
             android:windowSoftInputMode="stateHidden">
         </activity>
+
+        <service
+            android:name="huhu.com.chatonwifidirect.Widget.ConnectService"
+            android:enabled="true"
+            android:exported="true">
+        </service>
+
     </application>
 
 </manifest>

@@ -1,4 +1,4 @@
-package huhu.com.chatonwifidirect;
+package huhu.com.chatonwifidirect.Widget;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -7,10 +7,14 @@ import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Handler;
 import android.os.Message;
 
+import huhu.com.chatonwifidirect.Activity.MainActivity;
+import huhu.com.chatonwifidirect.Util.Constants;
+import huhu.com.chatonwifidirect.Util.ToastBuilder;
+
 /**
- * 广播接收器类
+ * 广播接收器类,用于接收p2p设备广播
  */
-public class MyReceiver extends BroadcastReceiver {
+public class p2pInfoReceiver extends BroadcastReceiver {
     //调试用tag
     private static final String TAG = "WifiDirectBroadReceiver";
     //wifi管理器实例
@@ -22,7 +26,7 @@ public class MyReceiver extends BroadcastReceiver {
     //Handler实例，为了传递给FindPeers类
     private Handler handler;
 
-    public MyReceiver(WifiP2pManager wifiP2pManager, WifiP2pManager.Channel channel, MainActivity activity, Handler handler) {
+    public p2pInfoReceiver(WifiP2pManager wifiP2pManager, WifiP2pManager.Channel channel, MainActivity activity, Handler handler) {
         this.wifiP2pManager = wifiP2pManager;
         this.channel = channel;
         this.activity = activity;
@@ -42,8 +46,9 @@ public class MyReceiver extends BroadcastReceiver {
                     ToastBuilder.Build("p2p功能不可用", context);
                 }
                 break;
+            //p2p连接状态改变发送的广播
             case WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION:
-                wifiP2pManager.requestConnectionInfo(channel, new ConnectPeers(handler,activity));
+                wifiP2pManager.requestConnectionInfo(channel, new ConnectPeers(handler, activity));
                 break;
             //对等体列表信息改变的广播
             case WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION:
@@ -57,6 +62,12 @@ public class MyReceiver extends BroadcastReceiver {
                 msg.what = 2;
                 msg.obj = intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_DEVICE);
                 handler.sendMessage(msg);
+                break;
+            //断开连接的广播
+            case Constants.DISCONNECT_ACTION:
+                Message message=new Message();
+                message.what=5;
+                handler.sendMessage(message);
                 break;
 
 
