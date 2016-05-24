@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Binder;
 import android.os.IBinder;
+import android.util.Log;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -62,9 +63,24 @@ public class ConnectService extends Service {
      * @param chatEntity 消息体
      */
     public void sendMessage(ChatEntity chatEntity) throws IOException {
-
         chatThread.write(chatEntity);
     }
+
+    /**
+     * 用户终止连接
+     */
+    public void cutConnection() throws IOException {
+        //构造一个标志Entity来通知对方关闭socket
+
+        ChatEntity end = new ChatEntity();
+        end.setName("cutt");
+        end.setWord("byebye");
+        sendMessage(end);
+        //结束连接
+        Log.e("ConnectService", "第2步");
+        chatThread.disconnection();
+    }
+
 
     /**
      * 接收用户发送消息的广播
@@ -77,7 +93,6 @@ public class ConnectService extends Service {
             switch (action) {
                 case Constants.NEW_MESSAGE_ACTION:
                     try {
-
                         sendMessage((ChatEntity) intent.getExtras().get("message"));
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -88,6 +103,11 @@ public class ConnectService extends Service {
         }
     }
 
+    @Override
+    public boolean onUnbind(Intent intent) {
+        unregisterReceiver(messageReceiver);
+        return super.onUnbind(intent);
+    }
 
     /**
      * 自定义Binder类

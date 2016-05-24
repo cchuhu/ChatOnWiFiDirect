@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -21,10 +22,12 @@ import android.widget.TextView;
 
 import com.example.wifidirect.R;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.util.ArrayList;
 
 import huhu.com.chatonwifidirect.Adapter.ListAdapter;
+import huhu.com.chatonwifidirect.Util.Constants;
 import huhu.com.chatonwifidirect.Util.ToastBuilder;
 import huhu.com.chatonwifidirect.Widget.ConnectService;
 import huhu.com.chatonwifidirect.Widget.FindPeers;
@@ -92,7 +95,6 @@ public class MainActivity extends Activity {
                         isGroupOwner = false;
                     }
                     initService(isGroupOwner, groupOwnerAddress);
-                    // jumpToChat(isGroupOwner, groupOwnerAddress, device.deviceName);
                     break;
                 case 5:
                     disconnect();
@@ -228,6 +230,7 @@ public class MainActivity extends Activity {
      * @param device 要连接的设备
      */
     private void connectDevice(WifiP2pDevice device, final int position) {
+
         WifiP2pConfig config = new WifiP2pConfig();
         config.deviceAddress = device.deviceAddress;
         //该接口仅仅通知连接是否成功
@@ -307,6 +310,19 @@ public class MainActivity extends Activity {
      * 断开连接的方法
      */
     private void disconnect() {
+       try {
+            Log.e("MainActivity", "第一步");
+            //结束后台线程
+            connectService.cutConnection();
+            //终止service
+            connectService.stopSelf();
+            //解除绑定
+            unbindService(serviceConnection);
+            //标志位回归
+            Constants.DISCONNECT = true;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         wifiP2pManager.removeGroup(channel, new WifiP2pManager.ActionListener() {
             @Override
             public void onSuccess() {

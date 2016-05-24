@@ -11,4 +11,7 @@ import huhu.com.chatonwifidirect.Entity.ChatEntity;
 public abstract class ChatThread extends Thread {
     //发送信息的方法
     public abstract void write(ChatEntity entity) throws IOException;
+
+    //结束socket的方法
+    public abstract void disconnection() throws IOException;
 }

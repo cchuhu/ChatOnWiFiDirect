@@ -80,24 +80,31 @@ public class ChatActivity extends Activity {
         btn_send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 String word = editText_message.getText().toString();
                 if (word.length() == 0) {
                     ToastBuilder.Build("请输入文字", ChatActivity.this);
                 } else {
-                    ChatEntity chatEntity = new ChatEntity();
-                    chatEntity.setName(name + ":");
-                    chatEntity.setWord(editText_message.getText().toString());
-                    //将自己发送的信息加入消息记录列表
-                    Record.CHAT_RECORD.add(chatEntity);
-                    //刷新数据
-                    adapter.notifyDataSetChanged();
-                    //将输入框清空
-                    editText_message.setText("");
-                    //向线程发送广播，请求发送消息
-                    Intent intent = new Intent();
-                    intent.setAction(Constants.NEW_MESSAGE_ACTION);
-                    intent.putExtra("message", chatEntity);
-                    sendBroadcast(intent);
+                    if (Constants.DISCONNECT) {
+                        ToastBuilder.Build("已断开连接", ChatActivity.this);
+                    } else {
+                        ChatEntity chatEntity = new ChatEntity();
+                        chatEntity.setName(name + ":");
+                        chatEntity.setWord(editText_message.getText().toString());
+                        //将自己发送的信息加入消息记录列表
+                        Record.CHAT_RECORD.add(chatEntity);
+                        //刷新数据
+                        adapter.notifyDataSetChanged();
+                        //将输入框清空
+                        editText_message.setText("");
+                        //向线程发送广播，请求发送消息
+                        Intent intent = new Intent();
+                        intent.setAction(Constants.NEW_MESSAGE_ACTION);
+                        intent.putExtra("message", chatEntity);
+                        sendBroadcast(intent);
+                    }
+
+
                 }
 
             }

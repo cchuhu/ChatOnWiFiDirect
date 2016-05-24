@@ -43,6 +43,7 @@ public class ClientThread extends ChatThread {
     @Override
     public void run() {
         try {
+            //初始化socket
             socket = new Socket();
             socket.bind(null);
             //设置5秒超时时间
@@ -52,24 +53,43 @@ public class ClientThread extends ChatThread {
             inputStream = new ObjectInputStream(socket.getInputStream());
             while (true) {
                 try {
+                    //将标志位置为false
+                    Constants.DISCONNECT = false;
                     ChatEntity chatEntity = (ChatEntity) inputStream.readObject();
-                    //将接收到的消息体加入消息记录列表
-                    Record.CHAT_RECORD.add(chatEntity);
-                    //发送广播通知列表刷新数据
-                    Intent i = new Intent();
-                    i.setAction(Constants.UPDATE_LIST_ACTION);
-                    context.sendBroadcast(i);
+                    if (chatEntity.getName().equals("cutt")) {
+                        Log.e("client收到信号", chatEntity.getWord());
+                        break;
+                    } else {
+                        //将接收到的消息体加入消息记录列表
+                        Record.CHAT_RECORD.add(chatEntity);
+                        //发送广播通知列表刷新数据
+                        Intent i = new Intent();
+                        i.setAction(Constants.UPDATE_LIST_ACTION);
+                        context.sendBroadcast(i);
+                    }
                 } catch (IOException e) {
-                    Log.e("IOException", "disconnected", e);
+                    inputStream.close();
+                    outputStream.close();
+                    socket.close();
                 }
+
 
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            try {
+                inputStream.close();
+                outputStream.close();
+                socket.close();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         } finally {
             try {
+                inputStream.close();
+                outputStream.close();
                 socket.close();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -82,6 +102,18 @@ public class ClientThread extends ChatThread {
     public void write(ChatEntity entity) throws IOException {
         outputStream.writeObject(entity);
         outputStream.flush();
+    }
+
+    @Override
+    public void disconnection() throws IOException {
+        Log.e("ClientThread", "第3步");
+        inputStream.close();
+        outputStream.close();
+        socket.close();
+        if(socket.isClosed()){
+            Log.e("socket已经关闭","第4步");
+        }
+
     }
 
 }

@@ -8,7 +8,6 @@ import android.os.Handler;
 import android.os.Message;
 
 import huhu.com.chatonwifidirect.Activity.MainActivity;
-import huhu.com.chatonwifidirect.Util.Constants;
 import huhu.com.chatonwifidirect.Util.ToastBuilder;
 
 /**
@@ -63,12 +62,12 @@ public class p2pInfoReceiver extends BroadcastReceiver {
                 msg.obj = intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_DEVICE);
                 handler.sendMessage(msg);
                 break;
-            //断开连接的广播
+        /*    //断开连接的广播
             case Constants.DISCONNECT_ACTION:
                 Message message=new Message();
                 message.what=5;
                 handler.sendMessage(message);
-                break;
+                break;*/
 
 
         }
